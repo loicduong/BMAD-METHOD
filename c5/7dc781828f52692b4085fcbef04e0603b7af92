@@ -1,0 +1,44 @@
+docs/cs/reference/agents.md
+  s_cb500b55f12896::t_82b7f48c44f290 20-22,24-25
+  s_cb500b55f12896::t_0796e7cf94eee7 14
+docs/fr/reference/commands.md
+  s_cb500b55f12896::t_82b7f48c44f290 83-84
+docs/fr/reference/agents.md
+  s_cb500b55f12896::t_82b7f48c44f290 20-22,24-25
+  s_cb500b55f12896::t_0796e7cf94eee7 14
+docs/vi-vn/reference/agents.md
+  s_cb500b55f12896::t_0796e7cf94eee7 14
+  s_cb500b55f12896::t_82b7f48c44f290 20-22,24-25
+docs/vi-vn/bmad-developer-guide.md
+  s_cb500b55f12896::t_82b7f48c44f290 99-101,103-104,110-112,386,398,409,420,488-489,492-494,497-499,742-743
+docs/zh-cn/reference/commands.md
+  s_cb500b55f12896::t_82b7f48c44f290 77-78
+docs/reference/agents.md
+  s_cb500b55f12896::t_0796e7cf94eee7 14
+  s_cb500b55f12896::t_82b7f48c44f290 20-22,24-25
+docs/zh-cn/reference/agents.md
+  s_cb500b55f12896::t_82b7f48c44f290 14-16,18-19
+docs/reference/commands.md
+  s_cb500b55f12896::t_82b7f48c44f290 83-84
+docs/cs/reference/commands.md
+  s_cb500b55f12896::t_82b7f48c44f290 83-84
+  s_cb500b55f12896::t_0796e7cf94eee7 127
+docs/vi-vn/reference/commands.md
+  s_cb500b55f12896::t_82b7f48c44f290 83-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "c57dc781828f52692b4085fcbef04e0603b7af92",
+  "prompts": {},
+  "sessions": {
+    "s_cb500b55f12896": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e4f3f-caaf-7850-81dc-bc980488768e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Loic Duong <mikhailcolt@gmail.com>"
+    }
+  }
+}
