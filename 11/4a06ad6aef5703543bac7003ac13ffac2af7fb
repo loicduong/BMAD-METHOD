@@ -1,0 +1,33 @@
+docs/vi-vn/bmad-developer-guide.md
+  s_4e7b84439d7b02::t_aae2f621eb4472 195,494,730
+website/public/workflow-map-diagram.html
+  s_4e7b84439d7b02::t_aae2f621eb4472 217
+docs/zh-cn/reference/workflow-map.md
+  s_4e7b84439d7b02::t_aae2f621eb4472 35
+docs/cs/reference/workflow-map.md
+  s_4e7b84439d7b02::t_aae2f621eb4472 40
+docs/vi-vn/reference/workflow-map.md
+  s_4e7b84439d7b02::t_aae2f621eb4472 40
+docs/fr/reference/workflow-map.md
+  s_4e7b84439d7b02::t_aae2f621eb4472 51
+docs/reference/workflow-map.md
+  s_4e7b84439d7b02::t_aae2f621eb4472 50
+website/public/workflow-map-diagram-fr.html
+  s_4e7b84439d7b02::t_aae2f621eb4472 206
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "114a06ad6aef5703543bac7003ac13ffac2af7fb",
+  "prompts": {},
+  "sessions": {
+    "s_4e7b84439d7b02": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e4dcb-b095-7c91-8701-b5989d37a3ff",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Loic Duong <mikhailcolt@gmail.com>"
+    }
+  }
+}
