@@ -345,6 +345,7 @@ function runAstroBuild({ outDir, siteUrl, versionsFile, publicDir }) {
       ...process.env,
       SITE_URL: siteUrl,
       BMAD_DOCS_OUT_DIR: outDir,
+      BMAD_DOCS_CONTENT_DIR: getActiveDocsContentDir(),
       BMAD_DOCS_PUBLIC_DIR: publicDir,
       BMAD_DOCS_VERSIONS_FILE: versionsFile,
     },
@@ -572,6 +573,14 @@ function readCurrentPackageVersion() {
 
 function ensureTrailingSlash(value) {
   return value.endsWith('/') ? value : `${value}/`;
+}
+
+function getActiveDocsContentDir() {
+  try {
+    return fs.realpathSync(WEBSITE_CONTENT_DOCS);
+  } catch {
+    return WEBSITE_CONTENT_DOCS;
+  }
 }
 
 function copyDirectoryRecursive(sourceDir, destDir) {

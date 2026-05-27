@@ -47,6 +47,11 @@ function runTests() {
     'copyVersionedArtifacts receives versionsFile explicitly',
   );
 
+  assert(content.includes('BMAD_DOCS_CONTENT_DIR: getActiveDocsContentDir()'), 'passes active docs content dir to Astro');
+
+  const astroConfig = fs.readFileSync(path.resolve('website/astro.config.mjs'), 'utf8');
+  assert(astroConfig.includes('contentDir: process.env.BMAD_DOCS_CONTENT_DIR'), 'rehype markdown links receives explicit contentDir');
+
   console.log('');
   console.log(`${colors.cyan}========================================`);
   console.log('Test Results:');

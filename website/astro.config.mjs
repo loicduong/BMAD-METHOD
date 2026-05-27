@@ -47,7 +47,7 @@ export default defineConfig({
 
   markdown: {
     rehypePlugins: [
-      [rehypeMarkdownLinks, { base: basePath }],
+      [rehypeMarkdownLinks, { base: basePath, contentDir: process.env.BMAD_DOCS_CONTENT_DIR }],
       [rehypeBasePaths, { base: basePath }],
     ],
   },
