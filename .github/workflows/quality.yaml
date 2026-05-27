@@ -106,6 +106,9 @@ jobs:
       - name: Test agent compilation components
         run: npm run test:install
 
+      - name: Test docs version selection
+        run: npm run test:docs-versions
+
       - name: Validate file references
         run: npm run validate:refs
 

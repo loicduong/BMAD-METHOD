@@ -2,20 +2,36 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
+import starlightVersions from 'starlight-versions';
 import rehypeMarkdownLinks from './src/rehype-markdown-links.js';
 import rehypeBasePaths from './src/rehype-base-paths.js';
 import { getSiteUrl } from './src/lib/site-url.mjs';
 import { locales } from './src/lib/locales.mjs';
+import { getDocVersions } from './src/lib/doc-versions.mjs';
 
 const siteUrl = getSiteUrl();
 const urlParts = new URL(siteUrl);
 // Normalize basePath: ensure trailing slash so links can use `${BASE_URL}path`
 const basePath = urlParts.pathname === '/' ? '/' : urlParts.pathname.endsWith('/') ? urlParts.pathname : urlParts.pathname + '/';
+const docVersions = getDocVersions();
+const versionPlugins =
+  docVersions.versions.length > 0
+    ? [
+        starlightVersions({
+          current: { label: docVersions.current?.label || 'Latest' },
+          versions: docVersions.versions.map((version) => ({
+            label: version.label || `v${version.version}`,
+            slug: version.version,
+          })),
+        }),
+      ]
+    : [];
 
 export default defineConfig({
   site: `${urlParts.origin}${basePath}`,
   base: basePath,
-  outDir: '../build/site',
+  outDir: process.env.BMAD_DOCS_OUT_DIR || '../build/site',
+  publicDir: process.env.BMAD_DOCS_PUBLIC_DIR || './public',
 
   // Disable aggressive caching in dev mode
   vite: {
@@ -189,6 +205,8 @@ export default defineConfig({
         Header: './src/components/Header.astro',
         MobileMenuFooter: './src/components/MobileMenuFooter.astro',
       },
+
+      plugins: versionPlugins,
 
       // Table of contents
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },

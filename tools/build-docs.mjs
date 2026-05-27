@@ -15,6 +15,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getSiteUrl } from '../website/src/lib/site-url.mjs';
 import { translatedLocales } from '../website/src/lib/locales.mjs';
+import { materializeVersionedDocs, prepareDocVersionSources, writeVersionCollectionFiles } from './prepare-doc-versions.mjs';
 
 // =============================================================================
 // Configuration
@@ -22,6 +23,9 @@ import { translatedLocales } from '../website/src/lib/locales.mjs';
 
 const PROJECT_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
+const WEBSITE_CONTENT_DOCS = path.join(PROJECT_ROOT, 'website', 'src', 'content', 'docs');
+const WEBSITE_CONTENT_VERSIONS = path.join(PROJECT_ROOT, 'website', 'src', 'content', 'versions');
+const WEBSITE_PUBLIC_DIR = path.join(PROJECT_ROOT, 'website', 'public');
 
 const REPO_URL = 'https://github.com/bmad-code-org/BMAD-METHOD';
 
@@ -72,8 +76,21 @@ async function main() {
   cleanBuildDirectory();
 
   const docsDir = path.join(PROJECT_ROOT, 'docs');
-  const artifactsDir = await generateArtifacts(docsDir);
-  const siteDir = buildAstroSite();
+  const versions = prepareDocsVersions();
+  const versionsFile = writeDocsVersionsFile(versions);
+  const artifactsDir = await generateArtifacts(docsDir, path.join(BUILD_DIR, 'artifacts'), getSiteUrl());
+  let siteDir;
+
+  withVersionedDocsContent(versions, () => {
+    siteDir = buildAstroSite({
+      artifactsDir,
+      outDir: path.join(BUILD_DIR, 'site'),
+      siteUrl: getSiteUrl(),
+      versionsFile,
+    });
+  });
+
+  await copyVersionedArtifacts({ versions, siteDir });
 
   printBuildSummary(docsDir, artifactsDir, siteDir);
 }
@@ -94,14 +111,13 @@ main().catch((error) => {
  * @returns {string} Path to the created artifacts directory.
  */
 
-async function generateArtifacts(docsDir) {
+async function generateArtifacts(docsDir, outputDir, siteUrl) {
   printHeader('Generating LLM files');
 
-  const outputDir = path.join(BUILD_DIR, 'artifacts');
   fs.mkdirSync(outputDir, { recursive: true });
 
   // Generate LLM files reading from docs/, output to artifacts/
-  generateLlmsTxt(outputDir);
+  generateLlmsTxt(outputDir, siteUrl);
   generateLlmsFullTxt(docsDir, outputDir);
 
   console.log();
@@ -115,20 +131,16 @@ async function generateArtifacts(docsDir) {
  *
  * @returns {string} The filesystem path to the built site directory (e.g., build/site).
  */
-function buildAstroSite() {
+function buildAstroSite({ artifactsDir, outDir, siteUrl, versionsFile, publicDir = WEBSITE_PUBLIC_DIR }) {
   printHeader('Building Astro + Starlight site');
 
-  const siteDir = path.join(BUILD_DIR, 'site');
-  const artifactsDir = path.join(BUILD_DIR, 'artifacts');
-
-  // Build Astro site (outputs to build/site via astro.config.mjs)
-  runAstroBuild();
-  copyArtifactsToSite(artifactsDir, siteDir);
+  runAstroBuild({ outDir, siteUrl, versionsFile, publicDir });
+  copyArtifactsToSite(artifactsDir, outDir);
 
   console.log();
   console.log(`  \u001B[32m✓\u001B[0m Astro build complete`);
 
-  return siteDir;
+  return outDir;
 }
 
 // =============================================================================
@@ -141,10 +153,9 @@ function buildAstroSite() {
  * @param {string} outputDir - Destination directory where `llms.txt` will be written.
  */
 
-function generateLlmsTxt(outputDir) {
+function generateLlmsTxt(outputDir, siteUrl) {
   console.log('  → Generating llms.txt...');
 
-  const siteUrl = getSiteUrl();
   const content = [
     '# BMAD Method Documentation',
     '',
@@ -325,13 +336,17 @@ function validateLlmSize(content) {
 /**
  * Builds the Astro site to build/site (configured in astro.config.mjs).
  */
-function runAstroBuild() {
+function runAstroBuild({ outDir, siteUrl, versionsFile, publicDir }) {
   console.log('  → Running astro build...');
   execSync('npx astro build --root website', {
     cwd: PROJECT_ROOT,
     stdio: 'inherit',
     env: {
       ...process.env,
+      SITE_URL: siteUrl,
+      BMAD_DOCS_OUT_DIR: outDir,
+      BMAD_DOCS_PUBLIC_DIR: publicDir,
+      BMAD_DOCS_VERSIONS_FILE: versionsFile,
     },
   });
 }
@@ -421,6 +436,159 @@ function cleanBuildDirectory() {
     fs.rmSync(BUILD_DIR, { recursive: true });
   }
   fs.mkdirSync(BUILD_DIR, { recursive: true });
+}
+
+function prepareDocsVersions() {
+  if (process.env.BMAD_DOCS_SKIP_VERSIONS === '1') {
+    return [];
+  }
+
+  printHeader('Preparing versioned documentation');
+  const versions = prepareDocVersionSources();
+
+  if (versions.length === 0) {
+    console.log('  No release tags found; building latest docs only.');
+  } else {
+    console.log(`  Prepared ${versions.length} version source(s):`);
+    for (const version of versions) {
+      console.log(`    ${version.tag} -> ${version.urlPath}`);
+    }
+  }
+
+  return versions;
+}
+
+function writeDocsVersionsFile(versions) {
+  const outputPath = path.join(BUILD_DIR, 'doc-versions.json');
+  const currentVersion = readCurrentPackageVersion();
+  const payload = {
+    current: {
+      label: currentVersion ? `Latest (${currentVersion})` : 'Latest',
+      version: currentVersion,
+    },
+    versions: versions.map((version) => ({
+      ...version,
+      label: `v${version.version}`,
+    })),
+  };
+
+  fs.writeFileSync(outputPath, `${JSON.stringify(payload, null, 2)}\n`);
+  return outputPath;
+}
+
+async function copyVersionedArtifacts({ versions, siteDir }) {
+  for (const version of versions) {
+    const versionSourceDir = path.join(BUILD_DIR, 'doc-version-sources', version.version);
+    const versionDocsDir = path.join(versionSourceDir, 'docs');
+    const versionArtifactsDir = path.join(BUILD_DIR, 'version-artifacts', version.version);
+    const versionSiteUrl = new URL(`${version.version}/`, ensureTrailingSlash(getSiteUrl())).toString();
+
+    if (!fs.existsSync(versionDocsDir)) {
+      console.warn(`  Skipping ${version.tag}: docs directory not found in tag.`);
+      continue;
+    }
+
+    const artifactsDir = await generateArtifacts(versionDocsDir, versionArtifactsDir, versionSiteUrl);
+    copyArtifactsToSite(artifactsDir, path.join(siteDir, version.version));
+  }
+
+  fs.copyFileSync(versionsFile, path.join(siteDir, 'versions.json'));
+}
+
+function withVersionedDocsContent(versions, callback) {
+  if (versions.length === 0) {
+    callback();
+    return;
+  }
+
+  const originalDocs = snapshotPathEntry(WEBSITE_CONTENT_DOCS, 'content-docs-backup');
+  const originalVersions = snapshotPathEntry(WEBSITE_CONTENT_VERSIONS, 'content-versions-backup');
+  const versionedDocsDir = path.join(BUILD_DIR, 'content-docs-versioned');
+
+  try {
+    materializeVersionedDocs({
+      currentDocsDir: path.join(PROJECT_ROOT, 'docs'),
+      versionSourcesDir: path.join(BUILD_DIR, 'doc-version-sources'),
+      outputDocsDir: versionedDocsDir,
+      versions,
+      locales: translatedLocales,
+    });
+    writeVersionCollectionFiles({ versionsDir: WEBSITE_CONTENT_VERSIONS, versions });
+
+    fs.rmSync(WEBSITE_CONTENT_DOCS, { recursive: true, force: true });
+    fs.symlinkSync(versionedDocsDir, WEBSITE_CONTENT_DOCS, 'dir');
+    callback();
+  } finally {
+    fs.rmSync(WEBSITE_CONTENT_DOCS, { recursive: true, force: true });
+    fs.rmSync(WEBSITE_CONTENT_VERSIONS, { recursive: true, force: true });
+    restorePathEntry(WEBSITE_CONTENT_DOCS, originalDocs);
+    restorePathEntry(WEBSITE_CONTENT_VERSIONS, originalVersions);
+  }
+}
+
+function snapshotPathEntry(targetPath, backupName) {
+  if (!fs.existsSync(targetPath)) {
+    return { type: 'missing' };
+  }
+
+  const stats = fs.lstatSync(targetPath);
+  if (stats.isSymbolicLink()) {
+    return { type: 'symlink', target: fs.readlinkSync(targetPath) };
+  }
+
+  if (stats.isDirectory()) {
+    const backupPath = path.join(BUILD_DIR, backupName);
+    fs.rmSync(backupPath, { recursive: true, force: true });
+    copyDirectoryRecursive(targetPath, backupPath);
+    return { type: 'directory', path: backupPath };
+  }
+
+  return { type: 'file', content: fs.readFileSync(targetPath) };
+}
+
+function restorePathEntry(targetPath, original) {
+  if (original.type === 'missing') {
+    return;
+  }
+
+  if (original.type === 'symlink') {
+    fs.symlinkSync(original.target, targetPath, 'dir');
+  } else if (original.type === 'directory') {
+    copyDirectoryRecursive(original.path, targetPath);
+  } else {
+    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    fs.writeFileSync(targetPath, original.content);
+  }
+}
+
+function readCurrentPackageVersion() {
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    return packageJson.version || null;
+  } catch {
+    return null;
+  }
+}
+
+function ensureTrailingSlash(value) {
+  return value.endsWith('/') ? value : `${value}/`;
+}
+
+function copyDirectoryRecursive(sourceDir, destDir) {
+  fs.mkdirSync(destDir, { recursive: true });
+
+  for (const entry of fs.readdirSync(sourceDir, { withFileTypes: true })) {
+    const sourcePath = path.join(sourceDir, entry.name);
+    const destPath = path.join(destDir, entry.name);
+
+    if (entry.isDirectory()) {
+      copyDirectoryRecursive(sourcePath, destPath);
+    } else if (entry.isSymbolicLink()) {
+      fs.symlinkSync(fs.readlinkSync(sourcePath), destPath);
+    } else {
+      fs.copyFileSync(sourcePath, destPath);
+    }
+  }
 }
 
 // =============================================================================

@@ -8,6 +8,7 @@ on:
       - "docs/**"
       - "website/**"
       - "tools/build-docs.mjs"
+      - "tools/prepare-doc-versions.mjs"
       - ".github/workflows/docs.yaml"
   workflow_dispatch:
 
@@ -39,6 +40,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Fetch release tags
+        run: git fetch --force --tags
 
       - name: Build documentation
         env:
