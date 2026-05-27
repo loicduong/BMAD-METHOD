@@ -90,7 +90,7 @@ async function main() {
     });
   });
 
-  await copyVersionedArtifacts({ versions, siteDir });
+  await copyVersionedArtifacts({ versions, versionsFile, siteDir });
 
   printBuildSummary(docsDir, artifactsDir, siteDir);
 }
@@ -476,7 +476,7 @@ function writeDocsVersionsFile(versions) {
   return outputPath;
 }
 
-async function copyVersionedArtifacts({ versions, siteDir }) {
+async function copyVersionedArtifacts({ versions, versionsFile, siteDir }) {
   for (const version of versions) {
     const versionSourceDir = path.join(BUILD_DIR, 'doc-version-sources', version.version);
     const versionDocsDir = path.join(versionSourceDir, 'docs');

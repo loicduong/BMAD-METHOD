@@ -109,6 +109,9 @@ jobs:
       - name: Test docs version selection
         run: npm run test:docs-versions
 
+      - name: Test docs build script wiring
+        run: npm run test:docs-build-static
+
       - name: Validate file references
         run: npm run validate:refs
 
