@@ -57,6 +57,28 @@ function runTests() {
   const astroConfig = fs.readFileSync(path.resolve('website/astro.config.mjs'), 'utf8');
   assert(astroConfig.includes('contentDir: process.env.BMAD_DOCS_CONTENT_DIR'), 'rehype markdown links receives explicit contentDir');
 
+  const notFoundPage = fs.readFileSync(path.resolve('website/src/pages/404.astro'), 'utf8');
+  assert(notFoundPage.includes('const basePath = import.meta.env.BASE_URL'), '404 locale redirect reads Astro base path');
+  assert(notFoundPage.includes('pathWithoutBase'), '404 locale redirect checks paths after removing the base path');
+  assert(notFoundPage.includes('window.location.assign'), '404 locale redirect preserves browser history');
+  assert(!notFoundPage.includes('window.location.replace'), '404 locale redirect does not replace browser history');
+
+  const notFoundLinks = [
+    ['docs/404.md', '](/)'],
+    ['docs/vi-vn/404.md', '](/vi-vn/)'],
+    ['docs/zh-cn/404.md', '](/zh-cn/)'],
+    ['docs/fr/404.md', '](/fr/)'],
+    ['docs/cs/404.md', '](/cs/)'],
+  ];
+
+  for (const [filePath, expectedLink] of notFoundLinks) {
+    const notFoundContent = fs.readFileSync(path.resolve(filePath), 'utf8');
+    assert(
+      notFoundContent.includes(expectedLink) && !/\]\([^)]*index\.md\)/.test(notFoundContent),
+      `${filePath} links home without a relative Markdown URL`,
+    );
+  }
+
   console.log('');
   console.log(`${colors.cyan}========================================`);
   console.log('Test Results:');
