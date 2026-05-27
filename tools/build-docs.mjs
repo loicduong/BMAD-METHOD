@@ -481,7 +481,6 @@ async function copyVersionedArtifacts({ versions, versionsFile, siteDir }) {
   for (const version of versions) {
     const versionSourceDir = path.join(BUILD_DIR, 'doc-version-sources', version.version);
     const versionDocsDir = path.join(versionSourceDir, 'docs');
-    const versionArtifactsDir = path.join(BUILD_DIR, 'version-artifacts', version.version);
     const versionSiteUrl = new URL(`${version.version}/`, ensureTrailingSlash(getSiteUrl())).toString();
 
     if (!fs.existsSync(versionDocsDir)) {
@@ -489,8 +488,7 @@ async function copyVersionedArtifacts({ versions, versionsFile, siteDir }) {
       continue;
     }
 
-    const artifactsDir = await generateArtifacts(versionDocsDir, versionArtifactsDir, versionSiteUrl);
-    copyArtifactsToSite(artifactsDir, path.join(siteDir, version.version));
+    await generateArtifacts(versionDocsDir, path.join(siteDir, version.version), versionSiteUrl);
   }
 
   fs.copyFileSync(versionsFile, path.join(siteDir, 'versions.json'));

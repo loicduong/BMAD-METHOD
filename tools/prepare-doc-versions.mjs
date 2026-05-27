@@ -132,18 +132,76 @@ function copyDocsIntoVersionLayout({ sourceDocsDir, outputDocsDir, version, loca
     const sourcePath = path.join(sourceDocsDir, entry.name);
 
     if (entry.isDirectory() && locales.includes(entry.name)) {
-      copyDirectoryRecursive(sourcePath, path.join(outputDocsDir, entry.name, version));
+      copyVersionedDocsRecursive({
+        sourceDir: sourcePath,
+        destDir: path.join(outputDocsDir, entry.name, version),
+        routePrefix: `${entry.name}/${version}`,
+      });
       continue;
     }
 
     const destPath = path.join(outputDocsDir, version, entry.name);
     if (entry.isDirectory()) {
-      copyDirectoryRecursive(sourcePath, destPath);
+      copyVersionedDocsRecursive({ sourceDir: sourcePath, destDir: destPath, routePrefix: `${version}/${entry.name}` });
     } else {
       fs.mkdirSync(path.dirname(destPath), { recursive: true });
-      fs.copyFileSync(sourcePath, destPath);
+      copyVersionedDocFile({ sourcePath, destPath, routeSlug: getDocRouteSlug(`${version}/${entry.name}`) });
     }
   }
+}
+
+function copyVersionedDocsRecursive({ sourceDir, destDir, routePrefix }) {
+  fs.mkdirSync(destDir, { recursive: true });
+
+  for (const entry of fs.readdirSync(sourceDir, { withFileTypes: true })) {
+    const sourcePath = path.join(sourceDir, entry.name);
+    const destPath = path.join(destDir, entry.name);
+    const routePath = `${routePrefix}/${entry.name}`;
+
+    if (entry.isDirectory()) {
+      copyVersionedDocsRecursive({ sourceDir: sourcePath, destDir: destPath, routePrefix: routePath });
+    } else {
+      fs.mkdirSync(path.dirname(destPath), { recursive: true });
+      copyVersionedDocFile({ sourcePath, destPath, routeSlug: getDocRouteSlug(routePath) });
+    }
+  }
+}
+
+function copyVersionedDocFile({ sourcePath, destPath, routeSlug }) {
+  if (!isMarkdownFile(sourcePath)) {
+    fs.copyFileSync(sourcePath, destPath);
+    return;
+  }
+
+  const content = fs.readFileSync(sourcePath, 'utf8');
+  fs.writeFileSync(destPath, upsertFrontmatterSlug(content, routeSlug), 'utf8');
+}
+
+function getDocRouteSlug(routePath) {
+  const withoutExtension = routePath.replace(/\.(md|mdx)$/i, '');
+  return withoutExtension.endsWith('/index') ? withoutExtension.slice(0, -'/index'.length) : withoutExtension;
+}
+
+function upsertFrontmatterSlug(content, slug) {
+  if (!content.startsWith('---')) {
+    return `---\nslug: ${JSON.stringify(slug)}\n---\n\n${content}`;
+  }
+
+  const frontmatterMatch = /^---\r?\n([\s\S]*?)\r?\n---(\r?\n|$)/.exec(content);
+  if (!frontmatterMatch) {
+    return `---\nslug: ${JSON.stringify(slug)}\n---\n\n${content}`;
+  }
+
+  const [, frontmatter, trailingNewline] = frontmatterMatch;
+  const nextFrontmatter = /^slug:\s*.*$/m.test(frontmatter)
+    ? frontmatter.replace(/^slug:\s*.*$/m, `slug: ${JSON.stringify(slug)}`)
+    : `${frontmatter}\nslug: ${JSON.stringify(slug)}`;
+
+  return `---\n${nextFrontmatter}\n---${trailingNewline}${content.slice(frontmatterMatch[0].length)}`;
+}
+
+function isMarkdownFile(filePath) {
+  return /\.(md|mdx)$/i.test(filePath);
 }
 
 function copyDirectoryRecursive(sourceDir, destDir) {

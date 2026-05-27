@@ -47,6 +47,11 @@ function runTests() {
     'copyVersionedArtifacts receives versionsFile explicitly',
   );
 
+  assert(
+    content.includes('await generateArtifacts(versionDocsDir, path.join(siteDir, version.version), versionSiteUrl)'),
+    'versioned LLM artifacts are generated directly into the version site directory',
+  );
+
   assert(content.includes('BMAD_DOCS_CONTENT_DIR: getActiveDocsContentDir()'), 'passes active docs content dir to Astro');
 
   const astroConfig = fs.readFileSync(path.resolve('website/astro.config.mjs'), 'utf8');
