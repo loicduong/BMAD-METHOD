@@ -1,0 +1,56 @@
+docs/vi-vn/tutorials/getting-started.md
+  s_e3604f8216e2fe::t_0fd0b63b0c79fb 145-146,150-152
+  s_e3604f8216e2fe::t_9984b04c3f448a 117,220,234
+  s_e3604f8216e2fe::t_bb5698707af903 148
+docs/vi-vn/how-to/non-interactive-installation.md
+  s_e3604f8216e2fe::t_15f2b9060b9a84 3,8-9
+README_VN.md
+  s_e3604f8216e2fe::t_03238013e9dc64 5,41,57-65,82-91,128
+docs/vi-vn/reference/commands.md
+  s_e3604f8216e2fe::t_1ba56d4a1cf1df 55,128
+  s_e3604f8216e2fe::t_d9e44ab5c0524f 45-46,83-84,94,96-97
+docs/vi-vn/how-to/use-web-bundles.md
+  s_e3604f8216e2fe::t_1e1964631f8003 1-41
+docs/vi-vn/reference/workflow-map.md
+  s_e3604f8216e2fe::t_2ff1baedbe0ccb 3,8,10,12,14,16,24,26-31,37-52,56,58-59,61-62,66,68-70,73,77,81,83-85,87,89,94,99-100
+docs/vi-vn/explanation/established-projects-faq.md
+  s_e3604f8216e2fe::t_661d757854e2c4 5
+docs/vi-vn/reference/agents.md
+  s_e3604f8216e2fe::t_d9e44ab5c0524f 20-25
+  s_e3604f8216e2fe::t_23f2a23b67c6c0 14
+docs/vi-vn/explanation/party-mode.md
+  s_e3604f8216e2fe::t_661d757854e2c4 5
+docs/vi-vn/explanation/named-agents.md
+  s_e3604f8216e2fe::t_23f2a23b67c6c0 39,87
+  s_e3604f8216e2fe::t_7c42d19fd1d69c 82
+docs/vi-vn/how-to/install-bmad.md
+  s_e3604f8216e2fe::t_15f2b9060b9a84 2-3,8,13-15,19-21,23-25,31-42,47-141,144-147,149,152,154-159,161,163-165,167,169-172,174,176,178-182,184,186,188,190-198,200-201,204-206,208-213,215,217-247,252-264,266
+docs/vi-vn/explanation/web-bundles.md
+  s_e3604f8216e2fe::t_1e1964631f8003 1-82
+docs/vi-vn/how-to/expand-bmad-for-your-org.md
+  s_e3604f8216e2fe::t_b55b2869a53dbf 3,8,238-307,310
+docs/vi-vn/explanation/forensic-investigation.md
+  s_e3604f8216e2fe::t_1e1964631f8003 1-94
+docs/vi-vn/explanation/project-context.md
+  s_e3604f8216e2fe::t_661d757854e2c4 5
+docs/vi-vn/reference/core-tools.md
+  s_e3604f8216e2fe::t_ab223fb62047ba 101-131
+  s_e3604f8216e2fe::t_5fb8ddb134b1a0 21,29
+  s_e3604f8216e2fe::t_8ee36ddbe95110 299-321
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a957b5d665be83d96505efeb7ee74b2c678c0636",
+  "prompts": {},
+  "sessions": {
+    "s_e3604f8216e2fe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019eaa2f-4aed-7c61-ba49-c2048fb09fe2",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Loic Duong <mikhailcolt@gmail.com>"
+    }
+  }
+}
