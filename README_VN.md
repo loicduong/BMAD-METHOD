@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.12.0-brightgreen)](https://nodejs.org)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue?logo=python&logoColor=white)](https://www.python.org)
 [![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet?logo=uv)](https://docs.astral.sh/uv/)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
@@ -38,7 +38,7 @@ Các công cụ AI truyền thống thường làm thay phần suy nghĩ của b
 
 ## Bắt đầu nhanh
 
-**Điều kiện tiên quyết**: [Node.js](https://nodejs.org) v20+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
+**Điều kiện tiên quyết**: [Node.js](https://nodejs.org) v20.12+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
 
 ```bash
 npx bmad-method install
@@ -52,6 +52,15 @@ Làm theo các lời nhắc của trình cài đặt, sau đó mở AI IDE của
 
 ```bash
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
+```
+
+Ghi đè bất kỳ tùy chọn cấu hình module nào bằng `--set <module>.<key>=<value>` (có thể lặp lại). Chạy `--list-options [module]` để xem các key official mà máy hiện biết cục bộ (module built-in cộng với mọi official module bên ngoài đã cache trên máy này):
+
+```bash
+npx bmad-method install --yes \
+  --modules bmm --tools claude-code \
+  --set bmm.project_knowledge=research \
+  --set bmm.user_skill_level=expert
 ```
 
 [Xem toàn bộ tùy chọn cài đặt](https://docs.bmad-method.org/vi-vn/how-to/non-interactive-installation/)
@@ -69,6 +78,16 @@ BMad Method có thể được mở rộng bằng các mô-đun chính thức ch
 | **[Test Architect (TEA)](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)**             | Chiến lược kiểm thử và tự động hóa dựa trên rủi ro |
 | **[Game Dev Studio (BMGD)](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                        | Quy trình phát triển game (Unity, Unreal, Godot)   |
 | **[Creative Intelligence Suite (CIS)](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | Đổi mới, động não ý tưởng, tư duy thiết kế         |
+
+## Web Bundles
+
+V4 từng phát hành web bundles. V6 đưa chúng trở lại, mới hơn và tốt hơn.
+
+Web bundles đóng gói một số BMad skill để cài dưới dạng **Google Gemini Gems** và **ChatGPT Custom GPTs**. Dùng chúng để làm phần lập kế hoạch ban đầu (brainstorming, product brief, PRD, PRFAQ, UX spec, nghiên cứu thị trường và ngành) trên gói web LLM của bạn, rồi đưa artifact đã hoàn thiện vào IDE để triển khai. Phần lập kế hoạch chạy trên gói thuê bao cố định thay vì token IDE tính theo mức sử dụng, nên tiết kiệm đáng kể trong các engagement dài. Hãy chọn model tốt nhất bạn có trong Gemini hoặc ChatGPT.
+
+Bộ bundle hiện tại: brainstorming, product brief, PRFAQ, PRD, UX, market & industry research.
+
+**Duyệt và cài tại [bmadcode.com/web-bundles](https://bmadcode.com/web-bundles/)**. Mỗi bundle có một thẻ riêng, hướng dẫn cài trực tiếp cho Gemini và ChatGPT, cùng ZIP tải xuống một cú nhấp. Xem [hướng dẫn web bundles](https://docs.bmad-method.org/vi-vn/explanation/web-bundles/) để hiểu concept.
 
 ## Tài liệu
 

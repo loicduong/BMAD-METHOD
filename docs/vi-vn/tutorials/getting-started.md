@@ -114,7 +114,7 @@ BMad-Help sẽ nhận biết bạn đã làm đến đâu và đề xuất chín
 :::
 
 :::note[Cách Nạp Agent Và Chạy Workflow]
-Mỗi workflow có một **skill** được gọi bằng tên trong IDE của bạn, ví dụ `bmad-create-prd`. Công cụ AI sẽ nhận diện tên `bmad-*` và chạy nó, bạn không cần nạp agent riêng. Bạn cũng có thể gọi trực tiếp skill của agent để trò chuyện tổng quát, ví dụ `bmad-agent-pm` cho PM agent.
+Mỗi workflow có một **skill** được gọi bằng tên trong IDE của bạn, ví dụ `bmad-prd`. Công cụ AI sẽ nhận diện tên `bmad-*` và chạy nó, bạn không cần nạp agent riêng. Bạn cũng có thể gọi trực tiếp skill của agent để trò chuyện tổng quát, ví dụ `bmad-agent-pm` cho PM agent.
 :::
 
 :::caution[Chat Mới]
@@ -142,9 +142,15 @@ Tất cả workflow trong phase này đều là tùy chọn. [**Chưa chắc nê
 ### Phase 2: Planning (Bắt buộc)
 
 **Với nhánh BMad Method và Enterprise:**
-1. Gọi **PM agent** (`bmad-agent-pm`) trong một chat mới
-2. Chạy workflow `bmad-create-prd` (`bmad-create-prd`)
-3. Kết quả: `PRD.md`
+1. Chạy `bmad-prd` trong một chat mới — nêu intent của bạn (Create / Update / Validate) hoặc để skill hỏi
+2. Kết quả: `prd.md`, `addendum.md`, `decision-log.md`
+
+:::note[`bmad-prd` intents]
+
+- **Create** — coached discovery từ đầu; skill đặt tên workspace folder và dẫn bạn tới một PRD bạn có thể tự hào
+- **Update** — trỏ tới một PRD hiện có và một tín hiệu thay đổi; skill làm lộ xung đột trước khi áp dụng thay đổi
+- **Validate** — critique một PRD hoàn chỉnh theo checklist và tạo báo cáo phát hiện HTML
+:::
 
 **Với nhánh Quick Flow:**
 - Chạy `bmad-quick-dev` — workflow này gộp cả planning và implementation trong một lần, nên bạn có thể chuyển thẳng sang triển khai
@@ -211,7 +217,7 @@ your-project/
 ├── _bmad/                                   # Cấu hình BMad
 ├── _bmad-output/
 │   ├── planning-artifacts/
-│   │   ├── PRD.md                           # Tài liệu yêu cầu của bạn
+│   │   ├── prd.md                           # Tài liệu yêu cầu của bạn
 │   │   ├── architecture.md                  # Các quyết định kỹ thuật
 │   │   └── epics/                           # Các file epic và story
 │   ├── implementation-artifacts/
@@ -225,7 +231,7 @@ your-project/
 | Workflow | Lệnh | Agent | Mục đích |
 | ------------------------------------- | ------------------------------------------ | --------- | ----------------------------------------------- |
 | **`bmad-help`** ⭐ | `bmad-help` | Bất kỳ | **Người dẫn đường thông minh của bạn — hỏi gì cũng được!** |
-| `bmad-create-prd` | `bmad-create-prd` | PM | Tạo tài liệu yêu cầu sản phẩm |
+| `bmad-prd` | `bmad-prd` | PM | Tạo, cập nhật, hoặc xác thực tài liệu yêu cầu sản phẩm |
 | `bmad-create-architecture` | `bmad-create-architecture` | Architect | Tạo tài liệu kiến trúc |
 | `bmad-generate-project-context` | `bmad-generate-project-context` | Analyst | Tạo file project context |
 | `bmad-create-epics-and-stories` | `bmad-create-epics-and-stories` | PM | Phân rã PRD thành epics |

@@ -18,7 +18,7 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 | [`bmad-help`](#bmad-help) | Tác vụ | Nhận hướng dẫn có ngữ cảnh về việc nên làm gì tiếp theo |
 | [`bmad-brainstorming`](#bmad-brainstorming) | Quy trình | Tổ chức các phiên brainstorming có tương tác |
 | [`bmad-party-mode`](#bmad-party-mode) | Quy trình | Điều phối thảo luận nhóm nhiều agent |
-| [`bmad-spec`](#bmad-spec) | Quy trình | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
+| [`bmad-spec`](#bmad-spec) | Quy trình | Chưng cất bất kỳ input ý định nào thành SPEC kernel và các file companion, hợp đồng chuẩn cho công việc downstream |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Tác vụ | Đẩy đầu ra của LLM qua các vòng tinh luyện lặp |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Tác vụ | Rà soát hoài nghi để tìm chỗ thiếu và chỗ sai |
 | [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Tác vụ | Phân tích toàn bộ nhánh rẽ để tìm trường hợp biên chưa được xử lý |
@@ -26,6 +26,7 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 | [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Tác vụ | Biên tập cấu trúc — cắt, gộp và tổ chức lại |
 | [`bmad-shard-doc`](#bmad-shard-doc) | Tác vụ | Tách file markdown lớn thành các phần có tổ chức |
 | [`bmad-index-docs`](#bmad-index-docs) | Tác vụ | Tạo hoặc cập nhật mục lục cho toàn bộ tài liệu trong một thư mục |
+| [`bmad-customize`](#bmad-customize) | Tác vụ | Tạo và xác minh các override tùy chỉnh BMad |
 
 ## bmad-help
 
@@ -96,6 +97,37 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 **Đầu vào:** Chủ đề hoặc câu hỏi thảo luận, cùng thông tin về các persona bạn muốn tham gia nếu có
 
 **Đầu ra:** Cuộc hội thoại nhiều agent theo thời gian thực, vẫn giữ nguyên cá tính từng agent
+
+## bmad-spec
+
+**Chưng cất bất kỳ input ý định nào thành hợp đồng SPEC chuẩn cho công việc downstream.** Công cụ này nhận brief, PRD, GDD, RFC, brain dump, transcript, thư mục UX, hoặc input hỗn hợp nhiều nguồn và tạo `SPEC.md` mang kernel năm trường (Why, Capabilities, Constraints, Non-goals, Success signal), cùng các file companion cho phần nội dung quan trọng không vừa trong kernel.
+
+**Dùng khi:**
+
+- Bạn cần khóa WHAT trước HOW cho bất kỳ loại công việc nào (phần mềm, thiết kế game, nghiên cứu, biên tập, chính sách, kinh doanh).
+- Bạn muốn một hợp đồng ngắn gọn, không rườm rà, tối ưu cho LLM để các skill downstream có thể dùng mà không phải đọc lại mọi artifact upstream.
+- Bạn muốn xác thực hoặc cập nhật một spec hiện có.
+
+**Cách hoạt động:**
+
+1. Đọc input và mọi tài liệu phụ trợ được liên kết.
+2. Chưng cất thành kernel năm trường bằng template có thể cấu hình; chuyển phần tràn sang companion được đặt tên phù hợp.
+3. Chạy self-validate hai pass (quy tắc coherence, rồi bảo toàn mọi claim quan trọng từ nguồn).
+4. Ghi `SPEC.md`, các companion cùng cấp, và `.decision-log.md` dưới `{output_folder}/specs/spec-{slug}/`.
+
+Spec Law áp đặt tám quy tắc: capabilities phải mang cả ý định và thành công; intents là WHAT chứ không phải HOW; constraints thật sự bẻ hướng quyết định; non-goals phải rõ ràng; success signals phải cụ thể; capability IDs phải ổn định; mọi claim quan trọng từ nguồn phải được bảo toàn; văn xuôi phải gọn.
+
+**Đầu vào:**
+
+- `input` *(bắt buộc)* — đường dẫn hoặc text inline. Ý tưởng mơ hồ, brain dump, PRD, GDD, RFC, brief, transcript, thư mục mockup, input hỗn hợp nhiều nguồn.
+- `slug` *(tùy chọn)* — chỉ bắt buộc khi input quá ít và không thể suy ra slug từ tên file nguồn.
+- `target_spec_path` *(tùy chọn)* — đặt để cập nhật một spec hiện có thay vì tạo mới.
+
+**Đầu ra:** Thư mục spec chứa `SPEC.md`, mọi file companion, và `.decision-log.md`. Caller headless nhận JSON response với trạng thái kết quả và danh sách file đã ghi hoặc chỉnh sửa.
+
+:::note[Mutation contract]
+`bmad-spec` là writer duy nhất của `SPEC.md` và các companion do spec tạo. Các skill khác tạo artifact native của riêng chúng và gọi `bmad-spec` ở chế độ headless khi cần diễn đạt intent thành hợp đồng chuẩn hoặc đề xuất cập nhật.
+:::
 
 ## bmad-advanced-elicitation
 
@@ -264,3 +296,26 @@ Hãy chạy cả `bmad-review-adversarial-general` và `bmad-review-edge-case-hu
 **Đầu vào:** Đường dẫn thư mục đích
 
 **Đầu ra:** `index.md` chứa danh sách file có tổ chức, liên kết tương đối và mô tả ngắn
+
+## bmad-customize
+
+**Tạo và xác minh các override tùy chỉnh.** Công cụ này giúp bạn thay đổi cách một BMad agent hoặc workflow đã cài hoạt động mà không cần tự viết TOML bằng tay.
+
+**Dùng khi:**
+
+- Bạn muốn thay đổi hành vi của một agent hoặc workflow
+- Bạn cần thêm persistent facts, activation hooks, hoặc custom menu items
+- Bạn muốn tự động chọn và xác minh đúng scope override
+
+**Cách hoạt động:**
+
+1. Quét các BMad skill đã cài để tìm bề mặt có thể tùy chỉnh
+2. Chọn đúng scope cho thay đổi bạn yêu cầu
+3. Ghi các file override dưới `_bmad/custom/`
+4. Xác minh cấu hình sau merge
+
+**Đầu vào:** Mô tả bằng ngôn ngữ tự nhiên về tùy chỉnh bạn muốn
+
+**Đầu ra:** Các file override TOML dưới `_bmad/custom/`
+
+Để xem hướng dẫn chi tiết về tùy chỉnh BMad, xem [Cách tùy chỉnh BMad](../how-to/customize-bmad.md).
