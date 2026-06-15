@@ -1,0 +1,19 @@
+.claude-plugin/marketplace.json
+  s_1375d3db124703::t_daa85cedd22649 60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "ccb821257505065c7f3703d763c1b6faa4cce52f",
+  "prompts": {},
+  "sessions": {
+    "s_1375d3db124703": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ec919-1d0f-7b73-a0e3-49713aacb53e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Loic Duong <mikhailcolt@gmail.com>"
+    }
+  }
+}
