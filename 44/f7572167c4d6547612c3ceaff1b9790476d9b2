@@ -1,0 +1,36 @@
+test/test-parse-source-urls.js
+  s_dfa74529396f90::t_070bf53f0548e7 218-219
+  s_dfa74529396f90::t_7ffb9d76f86053 232-236
+  s_dfa74529396f90::t_1b062367c6e72a 216,220
+  s_dfa74529396f90::t_a1835961164601 221-231,237-239
+  s_657c70bc75becd::t_9d305dc32b5094 217
+tools/installer/modules/custom-module-manager.js
+  s_dfa74529396f90::t_d638bd31116baa 417-418,423-424
+  s_dfa74529396f90::t_20cab974bd6628 14-22,100-101,415-416,419-422,425,442,700
+  s_657c70bc75becd::t_d45c98c85256f5 426-427
+  s_657c70bc75becd::t_25889153e437df 145-189
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "44f7572167c4d6547612c3ceaff1b9790476d9b2",
+  "prompts": {},
+  "sessions": {
+    "s_657c70bc75becd": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ed437-3cc5-7b82-993d-17e542a14308",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Loic Duong <mikhailcolt@gmail.com>"
+    },
+    "s_dfa74529396f90": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ed9a7-0727-7ae1-a379-d0101c8bbcec",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
