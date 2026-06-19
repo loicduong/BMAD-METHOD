@@ -1,0 +1,19 @@
+tools/installer/modules/custom-module-manager.js
+  s_dfa74529396f90::t_5a2e7aa2c5b05d 417-418,423-424
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "ea557079f0d20ff6437eb9d0eac2b8197403f193",
+  "prompts": {},
+  "sessions": {
+    "s_dfa74529396f90": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ed9a7-0727-7ae1-a379-d0101c8bbcec",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Loic Duong <mikhailcolt@gmail.com>"
+    }
+  }
+}
