@@ -1,0 +1,22 @@
+tools/installer/modules/custom-module-manager.js
+  s_e79504f3cc52a7::t_2d4a76b6869bcd 108
+  s_e79504f3cc52a7::t_6c85f26798704a 23-34,119-120
+test/test-parse-source-urls.js
+  s_e79504f3cc52a7::t_bd7ab5d12eb62f 257-290
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "4fa748baadc7e07e98b52732917679ef643e0328",
+  "prompts": {},
+  "sessions": {
+    "s_e79504f3cc52a7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f1037-3313-7303-93df-9d3ea4844229",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Loic Duong <mikhailcolt@gmail.com>"
+    }
+  }
+}
